@@ -54,18 +54,41 @@ const when = (date) => {
   string = string.join(' ');
   return string;
 };
+const daysAgo = () => {
+  const startDate = new Date(2017, 05, 21);
+  const endDate = new Date(2017, 08, 21);
+
+  const startYear = startDate.getFullYear();
+  const endYear = endDate.getFullYear();
+  const startMonth = startDate.getMonth() + 1;
+  const endMonth = endDate.getMonth() + 1;
+
+  let daysAgo = 0;
+  console.log(endDate);
+  for (let month = startMonth; month <= endMonth; month++) {
+    console.log(month);
+    const daysInMonth = new Date(2017, month, 0).getDate();
+    daysAgo += daysInMonth;
+  }
+
+  return daysAgo;
+}
 
 const ago = (date) => {
+  const now = new Date();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+
   const msInYears = (86400 * 1000) * 365;
-  const msInMonths = (86400 * 1000) * 12;
+  const msInMonths = (86400 * 1000) * daysInMonth;
   const msInWeeks = (86400 * 1000) * 7;
   const msInDays = 86400 * 1000;
   const msInHours = 3600 * 1000;
   const msInMins = 60 * 1000;
   const msInSeconds = 1000;
-  const now = new Date();
   const years = Math.round((now - date.getTime()) / msInYears);
-  const months = Math.round((now - date.getTime()) / msInMonths);
+
+  console.log(daysAgo());
+  const months = Math.round((now.getTime() - date.getTime()) / msInMonths);
   const weeks = Math.round((now - date.getTime()) / msInWeeks);
   const days = Math.round((now - date.getTime()) / msInDays);
   const hours = Math.round((now - date.getTime()) / msInHours);
