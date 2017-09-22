@@ -5,7 +5,7 @@ var assert = require('chai').assert;
 /**
  * Check days, hours, minutes and seconds
  * 
- * @param {dateDtring} checkDateString 
+ * @param {dateString} checkDateString 
  * @param {int} days 
  */
 function checkTotalDays(checkDateString, days) {
@@ -140,7 +140,7 @@ describe('Date string', () => {
     describe('Check date for one YEAR ago', () => {
         const yearAgoDate = new Date();
         yearAgoDate.setFullYear(yearAgoDate.getFullYear() - 1);
-        checkDateString = dateString(yearAgoDate);
+        const checkDateString = dateString(yearAgoDate);
         
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 1);
@@ -160,6 +160,36 @@ describe('Date string', () => {
         it('Check string results', () => {
             assert.equal(checkDateString.ago.strings.long, '1 year');
             assert.equal(checkDateString.ago.strings.short, '1 year');
+        });
+    });
+
+    describe('Check date for 6 MONTHS 4 DAYS ago', () => {
+        const testDate = new Date();
+        testDate.setMonth(testDate.getMonth() - 6);
+        testDate.setDate(testDate.getDate() - 4);
+        const checkDateString = dateString(testDate);
+        console.log(now, testDate);
+        console.log(checkDateString);
+        
+        it('for filtered results', () => {
+            assert.equal(checkDateString.ago.filtered.years, 0);
+            assert.equal(checkDateString.ago.filtered.months, 6);
+            assert.equal(checkDateString.ago.filtered.weeks, 0);
+            assert.equal(checkDateString.ago.filtered.days, 4);
+            assert.equal(checkDateString.ago.filtered.hours, 0);
+            assert.equal(checkDateString.ago.filtered.minutes, 0);
+            assert.equal(checkDateString.ago.filtered.seconds, 0);
+        });
+
+        it('Check total results', () => {
+            assert.equal(checkDateString.ago.total.years, 0);
+            assert.equal(checkDateString.ago.total.months, 6);
+            checkTotalDays(checkDateString, 96)
+        });
+
+        it('Check string results', () => {
+            assert.equal(checkDateString.ago.strings.long, '6 months 4 days');
+            assert.equal(checkDateString.ago.strings.short, '6 months');
         });
     });
 

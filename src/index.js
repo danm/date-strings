@@ -58,34 +58,33 @@ const when = (date) => {
 /**
  * Get the total months ago
  * 
- * @param {Date} nowDate 
- * @param {Date} previousDate 
- * @param {Int} totalDays 
+ * @param {Date} nowDate Date now
+ * @param {Date} previousDate Previous date
+ * @param {Int} totalDays Total days between now and previous date
  */
 const getTotalMonthsAgo = (nowDate, previousDate, totalDays) => {
   
-  const nowYear = nowDate.getFullYear();
-  const previousYear = previousDate.getFullYear();
-  const yearDiff = nowYear - previousYear;
+  const yearDiff = nowDate.getFullYear() - previousDate.getFullYear();
   const nowMonth = nowDate.getMonth();
   const previousMonth = previousDate.getMonth();
   
   let totalDaysCopy = totalDays;
-  let count = 0;
+  let monthsCount = 0;
   let daysAgo = 0;
   let daysLeftOver = totalDaysCopy;
 
   // Take away the years first
   totalDaysCopy = totalDaysCopy - (yearDiff * 365);
-  count = count + (yearDiff * 12);
+  monthsCount = monthsCount + (yearDiff * 12);
 
-  // Go through the months
+  // Go through the months because each month has varying amount of days
   for (let month = previousMonth; month < nowMonth; month++) {
-    const daysInMonth = new Date(nowYear, month, 0).getDate();
+    const daysInMonth = new Date(nowDate.getFullYear(), month, 0).getDate();
+    console.log(daysInMonth);
     totalDaysCopy = totalDaysCopy - daysInMonth;
 
     if (totalDaysCopy >= 0) {
-      count++;
+      monthsCount++;
     }
     
     if (totalDaysCopy <= 0) {
@@ -93,13 +92,14 @@ const getTotalMonthsAgo = (nowDate, previousDate, totalDays) => {
     }
   }
 
-  if (count > 0) {
+  if (monthsCount > 0) {
     daysLeftOver = Math.abs(totalDaysCopy);
   }
 
+  console.log(totalDays, totalDaysCopy, monthsCount, daysLeftOver);
   return {
-    months: count,
-    remainder: daysLeftOver
+    months: monthsCount,
+    remainderOfDays: daysLeftOver
   };
 }
 
@@ -141,17 +141,17 @@ const ago = (date) => {
   const secondsTotal    = Math.round((now - date.getTime()) / msInSeconds);
 
   // Months are a bit different and have their own calculations
-  const monthsTotal     = getTotalMonthsAgo(now, date, daysTotal).months;
-  const monthsFiltered  = getFilteredMonths(now, date);
+  const monthsCalculation = getTotalMonthsAgo(now, date, daysTotal);
+  const monthsTotal       = monthsCalculation.months;
+  const monthsFiltered    = getFilteredMonths(now, date);
   
-  const yearsRemainder    = Math.round((now - date.getTime()) % msInYears);
-  const monthsRemainder   = getTotalMonthsAgo(now, date, daysTotal).remainder * msInDays;
+  const monthsRemainder   = monthsCalculation.remainderOfDays * msInDays;
   const weeksRemainder    = monthsRemainder % msInWeeks;
   const daysRemainder     = weeksRemainder % msInDays;
   const hoursRemainder    = daysRemainder % msInHours;
   const minutesRemainder  = hoursRemainder % msInMins;
   
-  const yearsFiltered     = Math.round((now - date.getTime()) / msInYears);
+  const yearsFiltered     = Math.floor((now - date.getTime()) / msInYears);
   const weeksFiltered     = Math.floor(monthsRemainder / msInWeeks);
   const daysFiltered      = Math.floor(weeksRemainder / msInDays);
   const hoursFiltered     = Math.floor(daysRemainder / msInHours);
