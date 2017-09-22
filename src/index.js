@@ -54,140 +54,203 @@ const when = (date) => {
   string = string.join(' ');
   return string;
 };
-const daysAgo = () => {
-  const startDate = new Date(2017, 05, 21);
-  const endDate = new Date(2017, 08, 21);
 
-  const startYear = startDate.getFullYear();
-  const endYear = endDate.getFullYear();
-  const startMonth = startDate.getMonth() + 1;
-  const endMonth = endDate.getMonth() + 1;
-
+/**
+ * Get the total months ago
+ * 
+ * @param {Date} nowDate 
+ * @param {Date} previousDate 
+ * @param {Int} totalDays 
+ */
+const getTotalMonthsAgo = (nowDate, previousDate, totalDays) => {
+  
+  const nowYear = nowDate.getFullYear();
+  const previousYear = previousDate.getFullYear();
+  const yearDiff = nowYear - previousYear;
+  const nowMonth = nowDate.getMonth();
+  const previousMonth = previousDate.getMonth();
+  
+  let totalDaysCopy = totalDays;
+  let count = 0;
   let daysAgo = 0;
-  console.log(endDate);
-  for (let month = startMonth; month <= endMonth; month++) {
-    console.log(month);
-    const daysInMonth = new Date(2017, month, 0).getDate();
-    daysAgo += daysInMonth;
+  let daysLeftOver = totalDaysCopy;
+
+  // Take away the years first
+  totalDaysCopy = totalDaysCopy - (yearDiff * 365);
+  count = count + (yearDiff * 12);
+
+  // Go through the months
+  for (let month = previousMonth; month < nowMonth; month++) {
+    const daysInMonth = new Date(nowYear, month, 0).getDate();
+    totalDaysCopy = totalDaysCopy - daysInMonth;
+
+    if (totalDaysCopy >= 0) {
+      count++;
+    }
+    
+    if (totalDaysCopy <= 0) {
+      break;
+    }
   }
 
-  return daysAgo;
+  if (count > 0) {
+    daysLeftOver = Math.abs(totalDaysCopy);
+  }
+
+  return {
+    months: count,
+    remainder: daysLeftOver
+  };
+}
+
+/**
+ * Get the difference in months
+ * 
+ * @param {Date} nowDate Date now
+ * @param {Date} previousDate Previous date
+ */
+const getFilteredMonths = (nowDate, previousDate) => {
+  const nowMonth = nowDate.getMonth();
+  const previousMonth = previousDate.getMonth();
+
+  let diff = nowMonth - previousMonth;
+
+  if (diff < 1) {
+    return 0;
+  }
+
+  return diff;
 }
 
 const ago = (date) => {
+
   const now = new Date();
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-
-  const msInYears = (86400 * 1000) * 365;
-  const msInMonths = (86400 * 1000) * daysInMonth;
-  const msInWeeks = (86400 * 1000) * 7;
-  const msInDays = 86400 * 1000;
-  const msInHours = 3600 * 1000;
-  const msInMins = 60 * 1000;
+  
   const msInSeconds = 1000;
-  const years = Math.round((now - date.getTime()) / msInYears);
+  const msInMins    = msInSeconds * 60;
+  const msInHours   = msInMins * 60;
+  const msInDays    = msInHours * 24;
+  const msInWeeks   = msInDays * 7;
+  const msInYears   = msInDays * 365;
+  
+  const yearsTotal      = Math.round((now - date.getTime()) / msInYears);
+  const weeksTotal      = Math.round((now - date.getTime()) / msInWeeks);
+  const daysTotal       = Math.round((now - date.getTime()) / msInDays);
+  const hoursTotal      = Math.round((now - date.getTime()) / msInHours);
+  const minsTotal       = Math.round((now - date.getTime()) / msInMins);
+  const secondsTotal    = Math.round((now - date.getTime()) / msInSeconds);
 
-  console.log(daysAgo());
-  const months = Math.round((now.getTime() - date.getTime()) / msInMonths);
-  const weeks = Math.round((now - date.getTime()) / msInWeeks);
-  const days = Math.round((now - date.getTime()) / msInDays);
-  const hours = Math.round((now - date.getTime()) / msInHours);
-  const mins = Math.round((now - date.getTime()) / msInMins);
-  const seconds = Math.round((now - date.getTime()) / msInSeconds);
-  const y2 = Math.round((now - date.getTime()) / msInYears);
-  const y = Math.round((now - date.getTime()) % msInYears);
-  const m2 = Math.floor(y / msInMonths);
-  const m = y % msInMonths;
-  const w2 = Math.floor(m / msInWeeks);
-  const w = m % msInWeeks;
-  const d2 = Math.floor(w / msInDays);
-  const d = w % msInDays;
-  const h2 = Math.floor(d / msInHours);
-  const h = d % msInHours;
-  const mi2 = Math.floor(h / msInMins);
-  const mi = h % msInMins;
-  const s2 = Math.floor(mi / msInSeconds);
+  // Months are a bit different and have their own calculations
+  const monthsTotal     = getTotalMonthsAgo(now, date, daysTotal).months;
+  const monthsFiltered  = getFilteredMonths(now, date);
+  
+  const yearsRemainder    = Math.round((now - date.getTime()) % msInYears);
+  const monthsRemainder   = getTotalMonthsAgo(now, date, daysTotal).remainder * msInDays;
+  const weeksRemainder    = monthsRemainder % msInWeeks;
+  const daysRemainder     = weeksRemainder % msInDays;
+  const hoursRemainder    = daysRemainder % msInHours;
+  const minutesRemainder  = hoursRemainder % msInMins;
+  
+  const yearsFiltered     = Math.round((now - date.getTime()) / msInYears);
+  const weeksFiltered     = Math.floor(monthsRemainder / msInWeeks);
+  const daysFiltered      = Math.floor(weeksRemainder / msInDays);
+  const hoursFiltered     = Math.floor(daysRemainder / msInHours);
+  const minutesFiltered   = Math.floor(hoursRemainder / msInMins);
+  const secondsFiltered   = Math.floor(minutesRemainder / msInSeconds);
+
   let string = [];
   
-  if (y2 === 1) {
+  if (yearsFiltered === 1) {
     string.push('1 year');
-  } else if (y2 > 1) {
-    string.push(`${y2} years`);
-  } else if (m2 === 1) {
+  } else if (yearsFiltered > 1) {
+    string.push(`${yearsFiltered} years`);
+  } else if (monthsFiltered === 1) {
     string.push('1 month');
-  } else if (m2 > 1) {
-    string.push(`${m2} months`);
-  } else if (d2 === 1) {
+  } else if (monthsFiltered > 1) {
+    string.push(`${monthsFiltered} months`);
+  } else if(weeksFiltered === 1) {
+    string.push('7 days');
+  } else if (daysFiltered === 1) {
     string.push('1 day');
-  } else if (d2 > 1) {
-    string.push(`${d2} days`);
-  } else if (h2 === 1) {
+  } else if (daysFiltered > 1) {
+    string.push(`${daysFiltered} days`);
+  } else if (hoursFiltered === 1) {
     string.push('1 hour');
-  } else if (h2 > 1) {
-    string.push(`${h2} hours`);
-  } else if (mi2 === 1) {
+  } else if (hoursFiltered > 1) {
+    string.push(`${hoursFiltered} hours`);
+  } else if (minutesFiltered === 1) {
     string.push('1 minute');
-  } else if (mi2 > 1) {
-    string.push(`${mi2} minutes`);
-  } else if (s2 === 1) {
+  } else if (minutesFiltered > 1) {
+    string.push(`${minutesFiltered} minutes`);
+  } else if (secondsFiltered === 1) {
     string.push('1 second');
-  } else if (s2 > 1) {
-    string.push(`${s2} seconds`);
+  } else if (secondsFiltered > 1) {
+    string.push(`${secondsFiltered} seconds`);
   }
 
   string = string.join(' ');
   let longString = [];
-  if (m2 === 1) {
-    longString.push('1 month');
-  } else if (m2 > 1) {
-    longString.push(`${m2} months`);
-  }
-  
-  if (d2 === 1) {
-    longString.push('1 day');
-  } else if (d2 > 1) {
-    longString.push(`${d2} days`);
-  }
-  
-  if (h2 === 1) {
-    longString.push('1 hour');
-  } else if (h2 > 1) {
-    longString.push(`${h2} hours`);
-  }
-  
-  if (mi2 === 1) {
-    longString.push('1 minute');
-  } else if (mi2 > 1) {
-    longString.push(`${mi2} minutes`);
-  }
-  
-  if (s2 === 1) {
-    longString.push('1 second');
-  } else if (s2 > 1) {
-    longString.push(`${s2} seconds`);
+
+  if (yearsFiltered === 1) {
+    longString.push('1 year');
+  } else if (yearsFiltered > 1) {
+    longString.push(`${yearsFiltered} years`);
   }
 
+  if (monthsFiltered === 1) {
+    longString.push('1 month');
+  } else if (monthsFiltered > 1) {
+    longString.push(`${monthsFiltered} months`);
+  }
+
+  if (weeksFiltered === 1) {
+    longString.push('7 days');
+  }
   
+  if (daysFiltered === 1) {
+    longString.push('1 day');
+  } else if (daysFiltered > 1) {
+    longString.push(`${daysFiltered} days`);
+  }
+  
+  if (hoursFiltered === 1) {
+    longString.push('1 hour');
+  } else if (hoursFiltered > 1) {
+    longString.push(`${hoursFiltered} hours`);
+  }
+  
+  if (minutesFiltered === 1) {
+    longString.push('1 minute');
+  } else if (minutesFiltered > 1) {
+    longString.push(`${minutesFiltered} minutes`);
+  }
+  
+  if (secondsFiltered === 1) {
+    longString.push('1 second');
+  } else if (secondsFiltered > 1) {
+    longString.push(`${secondsFiltered} seconds`);
+  }
+
   longString = longString.join(' ');
 
   return {
     filtered: {
-      years: y2,
-      months: m2,
-      weeks: w2,
-      days: d2,
-      hours: h2,
-      minutes: mi2,
-      seconds: s2,
+      years: yearsFiltered,
+      months: monthsFiltered,
+      weeks: weeksFiltered,
+      days: daysFiltered,
+      hours: hoursFiltered,
+      minutes: minutesFiltered,
+      seconds: secondsFiltered,
     },
     total: {
-      years: years,
-      months: months,
-      weeks: weeks,
-      days: days,
-      hours: hours,
-      minutes: mins,
-      seconds: seconds,
+      years: yearsTotal,
+      months: monthsTotal,
+      weeks: weeksTotal,
+      days: daysTotal,
+      hours: hoursTotal,
+      minutes: minsTotal,
+      seconds: secondsTotal,
     },
     strings: {
       long: longString,
