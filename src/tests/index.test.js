@@ -5,10 +5,10 @@ var assert = require('chai').assert;
 /**
  * Check days, hours, minutes and seconds
  * 
- * @param {dateDtring} actual 
+ * @param {dateDtring} checkDateString 
  * @param int days 
  */
-function checkDays(actual, days) {
+function checkTotalDays(checkDateString, days) {
     assert.equal(checkDateString.ago.total.days, 1 * days);
     assert.equal(checkDateString.ago.total.hours, 24 * days);
     assert.equal(checkDateString.ago.total.minutes, 1440 * days);
@@ -27,54 +27,117 @@ describe('Date string', () => {
         })
     });
 
-    describe('Check date for one DAY ago', () => {
-        it('Should return numbers for one day ago', () => {
-            const yesterdayDate = new Date();
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            checkDateString = dateString(yesterdayDate);
-
+    describe('check date for one DAY ago', () => {
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const checkDateString = dateString(yesterdayDate);
+        
+        it('for filtered results', () => {
+            assert.equal(checkDateString.ago.filtered.years, 0);
+            assert.equal(checkDateString.ago.filtered.months, 0);
+            assert.equal(checkDateString.ago.filtered.weeks, 0);
+            assert.equal(checkDateString.ago.filtered.days, 1);
+            assert.equal(checkDateString.ago.filtered.hours, 0);
+            assert.equal(checkDateString.ago.filtered.minutes, 0);
+            assert.equal(checkDateString.ago.filtered.seconds, 0);
+        });
+            
+        it('for total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 0);
-            checkDays(checkDateString, 1)
-        })
+            checkTotalDays(checkDateString, 1)
+        });
+
+        it('for string results', () => {
+            assert.equal(checkDateString.ago.strings.long, '1 day');
+            assert.equal(checkDateString.ago.strings.short, '1 day');
+        });
     });
 
-    describe('Check date for one WEEK ago', () => {
-        it('Should return numbers for one week ago', () => {
-            const weekAgoDate = new Date();
-            weekAgoDate.setDate(weekAgoDate.getDate() - 7);
-            checkDateString = dateString(weekAgoDate);
+    
+    describe('check date for one WEEK ago', () => {
+        const weekAgoDate = new Date();
+        weekAgoDate.setDate(weekAgoDate.getDate() - 7);
+        const checkDateString = dateString(weekAgoDate);
+        
+        it('for filtered results', () => {
+            assert.equal(checkDateString.ago.filtered.years, 0);
+            assert.equal(checkDateString.ago.filtered.months, 0);
+            assert.equal(checkDateString.ago.filtered.weeks, 1);
+            assert.equal(checkDateString.ago.filtered.days, 0);
+            assert.equal(checkDateString.ago.filtered.hours, 0);
+            assert.equal(checkDateString.ago.filtered.minutes, 0);
+            assert.equal(checkDateString.ago.filtered.seconds, 0);
+        });
 
+        it('Check total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 0);
-            checkDays(checkDateString, 7)
-        })
+            checkTotalDays(checkDateString, 7)
+        });
+
+        it('Check string results', () => {
+            assert.equal(checkDateString.ago.strings.long, '7 days');
+            assert.equal(checkDateString.ago.strings.short, '7 days');
+        });
     });
 
     describe('Check date for one MONTH ago', () => {
-        it('Should return numbers for one month ago', () => {
-            const monthAgoDate = new Date();
-            monthAgoDate.setMonth(monthAgoDate.getMonth() -1);
-            checkDateString = dateString(monthAgoDate);
+        const monthAgoDate = new Date();
+        monthAgoDate.setMonth(monthAgoDate.getMonth() -1);
+        const checkDateString = dateString(monthAgoDate);
+        // console.log(checkDateString);
+        it('for filtered results', () => {
+            assert.equal(checkDateString.ago.filtered.years, 0);
+            assert.equal(checkDateString.ago.filtered.months, 1);
+            assert.equal(checkDateString.ago.filtered.weeks, 0);
+            assert.equal(checkDateString.ago.filtered.days, 0);
+            assert.equal(checkDateString.ago.filtered.hours, 0);
+            assert.equal(checkDateString.ago.filtered.minutes, 0);
+            assert.equal(checkDateString.ago.filtered.seconds, 0);
+        });
 
+        it('Check total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 1);
-            checkDays(checkDateString, daysInMonth)
-        })
-    });
+            checkTotalDays(checkDateString, 31)
+        });
 
+        it('Check string results', () => {
+            assert.equal(checkDateString.ago.strings.long, '1 month');
+            assert.equal(checkDateString.ago.strings.short, '1 month');
+        });
+    });
+    
     describe('Check date for three MONTHS ago', () => {
-        it('Should return numbers for three months ago', () => {
-            const monthAgoDate = new Date();
-            monthAgoDate.setMonth(monthAgoDate.getMonth() -3);
-            checkDateString = dateString(monthAgoDate);
+        const monthAgoDate = new Date();
+        monthAgoDate.setMonth(monthAgoDate.getMonth() - 4);
+        const checkDateString = dateString(monthAgoDate);
+        console.log(checkDateString);
+        it('for filtered results', () => {
+            assert.equal(checkDateString.ago.filtered.years, 0);
+            assert.equal(checkDateString.ago.filtered.months,4);
+            assert.equal(checkDateString.ago.filtered.weeks, 0);
+            assert.equal(checkDateString.ago.filtered.days, 0);
+            assert.equal(checkDateString.ago.filtered.hours, 0);
+            assert.equal(checkDateString.ago.filtered.minutes, 0);
+            assert.equal(checkDateString.ago.filtered.seconds, 0);
+        });
 
-            assert.equal(checkDateString.ago.total.years, 0);
-            assert.equal(checkDateString.ago.total.months, 3);
-            // checkDays(checkDateString, daysInMonth * 3)
-        })
+        // it('Check total results', () => {
+        //     assert.equal(checkDateString.ago.total.years, 0);
+        //     assert.equal(checkDateString.ago.total.months, 3);
+        //     checkTotalDays(checkDateString, 90)
+        // });
+
+        // it('Check string results', () => {
+        //     assert.equal(checkDateString.ago.strings.long, '3 months');
+        //     assert.equal(checkDateString.ago.strings.short, '3 months');
+        // });
+        
     });
-
+    
+    /*
     describe('Check date for one YEAR ago', () => {
         it('Should return numbers for one year ago', () => {
             const yearAgoDate = new Date();
@@ -83,8 +146,8 @@ describe('Date string', () => {
 
             assert.equal(checkDateString.ago.total.years, 1);
             assert.equal(checkDateString.ago.total.months, 12);
-            checkDays(checkDateString, 365)
-            console.log(checkDateString);
+            checkTotalDays(checkDateString, 365);
         })
     });
-})
+    */
+});
