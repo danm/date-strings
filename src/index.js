@@ -1,26 +1,49 @@
-const checkIfValidDate = (d) => {
-  if (d.toString() === 'Invalid Date') {
+const now = new Date();
+
+const msInSeconds = 1000;
+const msInMins    = msInSeconds * 60;
+const msInHours   = msInMins * 60;
+const msInDays    = msInHours * 24;
+const msInWeeks   = msInDays * 7;
+
+/**
+ * Check if the input is a valid date object
+ * 
+ * @param {Date} d JS Date object
+ */
+const checkIfValidDate = (date) => {
+  if (date.toString() === 'Invalid Date') {
       return new Error('Date object found, but invalid date');
   } else {
-      return d;
+      return date;
   }
 };
 
-const checkIfDate = (d) => {
-  if (d instanceof Date) {
+/**
+ * Check if valid date, else try to convert it to a date object
+ * 
+ * @param {Date} d JS Date bject
+ */
+const checkIfDate = (date) => {
+  if (date instanceof Date) {
     // is date object, let us see if it is valid
-    d = checkIfValidDate(d);
-    if (d instanceof Error) return d;
+    date = checkIfValidDate(date);
+    if (date instanceof Error) return date;
   } else {
-    d = new Date(d);
-    d = checkIfValidDate(d);
-    if (d instanceof Error) return d;
+    date = new Date(date);
+    date = checkIfValidDate(date);
+    if (date instanceof Error) return date;
   }
-  return d;
+  return date;
 };
 
-const getMonth = d => {
-  switch (d) {
+/**
+ * Return the month in string for the month value
+ * 
+ * @param {Int} month JS date month value
+ */
+const getMonth = month => {
+  switch (month) {
     case 0: return 'Jan';
     case 1: return 'Feb';
     case 2: return 'Mar';
@@ -37,6 +60,11 @@ const getMonth = d => {
   }
 };
 
+/**
+ * Return when
+ * 
+ * @param {Date} date 
+ */
 const when = (date) => {
   const today = new Date();
   const yesterday = new Date();
@@ -55,120 +83,220 @@ const when = (date) => {
   return string;
 };
 
-const ago = (date) => {
-  const msInYears = (86400 * 1000) * 365;
-  const msInMonths = (86400 * 1000) * 12;
-  const msInWeeks = (86400 * 1000) * 7;
-  const msInDays = 86400 * 1000;
-  const msInHours = 3600 * 1000;
-  const msInMins = 60 * 1000;
-  const msInSeconds = 1000;
-  const now = new Date();
-  const years = Math.round((now - date.getTime()) / msInYears);
-  const months = Math.round((now - date.getTime()) / msInMonths);
-  const weeks = Math.round((now - date.getTime()) / msInWeeks);
-  const days = Math.round((now - date.getTime()) / msInDays);
-  const hours = Math.round((now - date.getTime()) / msInHours);
-  const mins = Math.round((now - date.getTime()) / msInMins);
-  const seconds = Math.round((now - date.getTime()) / msInSeconds);
-  const y2 = Math.round((now - date.getTime()) / msInYears);
-  const y = Math.round((now - date.getTime()) % msInYears);
-  const m2 = Math.floor(y / msInMonths);
-  const m = y % msInMonths;
-  const w2 = Math.floor(m / msInWeeks);
-  const w = m % msInWeeks;
-  const d2 = Math.floor(w / msInDays);
-  const d = w % msInDays;
-  const h2 = Math.floor(d / msInHours);
-  const h = d % msInHours;
-  const mi2 = Math.floor(h / msInMins);
-  const mi = h % msInMins;
-  const s2 = Math.floor(mi / msInSeconds);
-  let string = [];
+/**
+ * Get the total months ago
+ * 
+ * @param {Date} nowDate Date now
+ * @param {Date} previousDate Previous date
+ * @param {Int} totalDays Total days between now and previous date
+ */
+const getTotalMonths = (nowDate, previousDate) => {
+  let monthsCount = 0;
+  let remainderOfDays = 0;
   
-  if (y2 === 1) {
-    string.push('1 year');
-  } else if (y2 > 1) {
-    string.push(`${y2} years`);
-  } else if (m2 === 1) {
-    string.push('1 month');
-  } else if (m2 > 1) {
-    string.push(`${m2} months`);
-  } else if (d2 === 1) {
-    string.push('1 day');
-  } else if (d2 > 1) {
-    string.push(`${d2} days`);
-  } else if (h2 === 1) {
-    string.push('1 hour');
-  } else if (h2 > 1) {
-    string.push(`${h2} hours`);
-  } else if (mi2 === 1) {
-    string.push('1 minute');
-  } else if (mi2 > 1) {
-    string.push(`${mi2} minutes`);
-  } else if (s2 === 1) {
-    string.push('1 second');
-  } else if (s2 > 1) {
-    string.push(`${s2} seconds`);
-  }
+  const yearDiff = nowDate.getFullYear() - previousDate.getFullYear();
+  
+  // Add the months in years first
+  monthsCount = monthsCount + (yearDiff * 12);
 
-  string = string.join(' ');
-  let longString = [];
-  if (m2 === 1) {
-    longString.push('1 month');
-  } else if (m2 > 1) {
-    longString.push(`${m2} months`);
-  }
-  
-  if (d2 === 1) {
-    longString.push('1 day');
-  } else if (d2 > 1) {
-    longString.push(`${d2} days`);
-  }
-  
-  if (h2 === 1) {
-    longString.push('1 hour');
-  } else if (h2 > 1) {
-    longString.push(`${h2} hours`);
-  }
-  
-  if (mi2 === 1) {
-    longString.push('1 minute');
-  } else if (mi2 > 1) {
-    longString.push(`${mi2} minutes`);
-  }
-  
-  if (s2 === 1) {
-    longString.push('1 second');
-  } else if (s2 > 1) {
-    longString.push(`${s2} seconds`);
-  }
+  // Add the difference in months;
+  monthsCount += + Math.abs(nowDate.getMonth() - previousDate.getMonth());
 
-  
-  longString = longString.join(' ');
+  // Remainder of days left
+  remainderOfDays = Math.abs(nowDate.getDate() - previousDate.getDate());
 
   return {
-    filtered: {
-      years: y2,
-      months: m2,
-      weeks: w2,
-      days: d2,
-      hours: h2,
-      minutes: mi2,
-      seconds: s2,
-    },
-    total: {
-      years: years,
-      months: months,
-      weeks: weeks,
-      days: days,
-      hours: hours,
-      minutes: mins,
-      seconds: seconds,
-    },
+    months: monthsCount,
+    remainderOfDays: remainderOfDays
+  };
+}
+
+/**
+ * Get the difference in months
+ * 
+ * @param {Date} nowDate Date now
+ * @param {Date} previousDate Previous date
+ */
+const getFilteredMonths = (nowDate, previousDate) => {
+  let diff = nowDate.getMonth() - previousDate.getMonth();
+
+  if (diff < 1) {
+    return 0;
+  }
+
+  return diff;
+}
+
+/**
+ * Get total time difference in the various formats
+ * 
+ * @param {Date} date date object
+ */
+const getTotalValues = (date) => {
+  const yearsTotal      = now.getFullYear() - date.getFullYear();
+  const weeksTotal      = Math.round((now - date.getTime()) / msInWeeks);
+  const daysTotal       = Math.round((now - date.getTime()) / msInDays);
+  const hoursTotal      = Math.round((now - date.getTime()) / msInHours);
+  const minsTotal       = Math.round((now - date.getTime()) / msInMins);
+  const secondsTotal    = Math.round((now - date.getTime()) / msInSeconds);
+
+  // Months are a bit different and have their own calculations
+  const monthsTotal       = getTotalMonths(now, date).months;
+
+  return {
+    years: yearsTotal,
+    months: monthsTotal,
+    weeks: weeksTotal,
+    days: daysTotal,
+    hours: hoursTotal,
+    minutes: minsTotal,
+    seconds: secondsTotal,
+  };
+}
+
+/**
+ * Get the filtered value in various formats
+ * 
+ * @param {Date} date JS Date object
+ */
+const getFilteredValues = (date) => {
+
+  // Calculate remainders
+  const monthsRemainder   = getTotalMonths(now, date).remainderOfDays * msInDays;
+  const weeksRemainder    = monthsRemainder % msInWeeks;
+  const daysRemainder     = weeksRemainder % msInDays;
+  const hoursRemainder    = daysRemainder % msInHours;
+  const minutesRemainder  = hoursRemainder % msInMins;
+  
+  // Calculate filtered time
+  const yearsFiltered     = now.getFullYear() - date.getFullYear();
+  const monthsFiltered    = getFilteredMonths(now, date);
+  const weeksFiltered     = Math.floor(monthsRemainder / msInWeeks);
+  const daysFiltered      = Math.floor(weeksRemainder / msInDays);
+  const hoursFiltered     = Math.floor(daysRemainder / msInHours);
+  const minutesFiltered   = Math.floor(hoursRemainder / msInMins);
+  const secondsFiltered   = Math.floor(minutesRemainder / msInSeconds);
+
+  return {
+    years: yearsFiltered,
+    months: monthsFiltered,
+    weeks: weeksFiltered,
+    days: daysFiltered,
+    hours: hoursFiltered,
+    minutes: minutesFiltered,
+    seconds: secondsFiltered,
+  };
+}
+
+/**
+ * Return the time ago in short string
+ * 
+ * @param {filter} filtered
+ */
+const getShortString = (filtered) => {
+  let string = [];
+  
+  if (filtered.years === 1) {
+    string.push('1 year');
+  } else if (filtered.years > 1) {
+    string.push(`${filtered.years} years`);
+  } else if (filtered.months === 1) {
+    string.push('1 month');
+  } else if (filtered.months > 1) {
+    string.push(`${filtered.months} months`);
+  } else if(filtered.weeks === 1) {
+    string.push('1 week');
+  } else if (filtered.days === 1) {
+    string.push('1 day');
+  } else if (filtered.days > 1) {
+    string.push(`${filtered.days} days`);
+  } else if (filtered.hours === 1) {
+    string.push('1 hour');
+  } else if (filtered.hours > 1) {
+    string.push(`${filtered.hours} hours`);
+  } else if (filtered.minutes === 1) {
+    string.push('1 minute');
+  } else if (filtered.minutes > 1) {
+    string.push(`${filtered.minutes} minutes`);
+  } else if (filtered.seconds === 1) {
+    string.push('1 second');
+  } else if (filtered.seconds > 1) {
+    string.push(`${filtered.seconds} seconds`);
+  }
+
+  return string.join(' ');
+}
+
+/**
+ * Return the time ago in long string
+ * 
+ * @param {filter} filtered 
+ */
+const getLongString = (filtered) => {
+  let longString = [];
+  
+  if (filtered.years === 1) {
+    longString.push('1 year');
+  } else if (filtered.years > 1) {
+    longString.push(`${filtered.years} years`);
+  }
+
+  if (filtered.months === 1) {
+    longString.push('1 month');
+  } else if (filtered.months > 1) {
+    longString.push(`${filtered.months} months`);
+  }
+
+  if (filtered.weeks === 1) {
+    longString.push('1 week');
+  } else if (filtered.weeks > 1) {
+    longString.push(`${filtered.weeks} weeks`);
+  }
+  
+  if (filtered.days === 1) {
+    longString.push('1 day');
+  } else if (filtered.days > 1) {
+    longString.push(`${filtered.days} days`);
+  }
+  
+  if (filtered.hours === 1) {
+    longString.push('1 hour');
+  } else if (filtered.hours > 1) {
+    longString.push(`${filtered.hours} hours`);
+  }
+  
+  if (filtered.minutes === 1) {
+    longString.push('1 minute');
+  } else if (filtered.minutes > 1) {
+    longString.push(`${filtered.minutes} minutes`);
+  }
+  
+  if (filtered.seconds === 1) {
+    longString.push('1 second');
+  } else if (filtered.seconds > 1) {
+    longString.push(`${filtered.seconds} seconds`);
+  }
+
+  return longString.join(' ');
+}
+
+/**
+ * Calculate the time difference between and date and now
+ * 
+ * @param {Date} date JS Date object
+ */
+const ago = (date) => {
+  const total = getTotalValues(date);
+  const filtered = getFilteredValues(date);
+  const shortString = getShortString(filtered);
+  const longString = getLongString(filtered);
+
+  return {
+    filtered: filtered,
+    total: total,
     strings: {
       long: longString,
-      short: string,
+      short: shortString,
     },
   };
 }
