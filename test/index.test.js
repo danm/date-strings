@@ -1,6 +1,5 @@
-var dateString = require('../index.js');
+var dateString = require('../lib/index.js');
 var assert = require('chai').assert;
-
 
 /**
  * Check days, hours, minutes and seconds
@@ -193,7 +192,6 @@ describe('Date string', () => {
         testDate.setMonth(testDate.getMonth() - 3);
         testDate.setDate(testDate.getDate() - 12);
         const checkDateString = dateString(testDate);
-        console.log(checkDateString);
         
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 1);
