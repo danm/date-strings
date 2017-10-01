@@ -204,6 +204,8 @@ const getShortString = (filtered) => {
     string.push(`${filtered.months} months`);
   } else if (filtered.weeks === 1) {
     string.push('1 week');
+  } else if (filtered.weeks > 1) {
+    string.push(`${filtered.weeks} weeks`);
   } else if (filtered.days === 1) {
     string.push('1 day');
   } else if (filtered.days > 1) {
