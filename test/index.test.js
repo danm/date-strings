@@ -42,7 +42,7 @@ describe('Date string', () => {
         it('for total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 0);
-            checkTotalDays(checkDateString, 1)
+            checkTotalDays(checkDateString, 1);
         });
 
         it('for string results', () => {
@@ -55,7 +55,6 @@ describe('Date string', () => {
         const weekAgoDate = new Date();
         weekAgoDate.setDate(weekAgoDate.getDate() - 7);
         const checkDateString = dateString(weekAgoDate);
-
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 0);
             assert.equal(checkDateString.ago.filtered.months, 0);
@@ -83,6 +82,14 @@ describe('Date string', () => {
         monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
         const checkDateString = dateString(monthAgoDate);
 
+        // how many days in a month
+        const start = new Date(monthAgoDate);
+        start.setDate(1);
+        const end = new Date(start);
+        end.setMonth(end.getMonth() + 1);
+        end.setDate(end.getDate() - 1);
+        const daysInMonth = end.getDate();
+
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 0);
             assert.equal(checkDateString.ago.filtered.months, 1);
@@ -96,7 +103,7 @@ describe('Date string', () => {
         it('for total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 1);
-            checkTotalDays(checkDateString, 31)
+            checkTotalDays(checkDateString, daysInMonth);
         });
 
         it('for string results', () => {
@@ -137,7 +144,7 @@ describe('Date string', () => {
         const yearAgoDate = new Date();
         yearAgoDate.setFullYear(yearAgoDate.getFullYear() - 1);
         const checkDateString = dateString(yearAgoDate);
-        
+
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 1);
             assert.equal(checkDateString.ago.filtered.months, 0);
@@ -192,7 +199,6 @@ describe('Date string', () => {
         testDate.setMonth(testDate.getMonth() - 3);
         testDate.setDate(testDate.getDate() - 12);
         const checkDateString = dateString(testDate);
-        
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 1);
             assert.equal(checkDateString.ago.filtered.months, 3);
