@@ -6,6 +6,9 @@ const msInHours   = msInMins * 60;
 const msInDays    = msInHours * 24;
 const msInWeeks   = msInDays * 7;
 
+// console.log('msInWeeks: ', msInWeeks);
+// console.log('msInDays: ', msInDays);
+
 /**
  * Check if the input is a valid date object
  * 
@@ -66,65 +69,63 @@ const getMonth = month => {
  * @param {Date} date 
  */
 const when = (date) => {
+  const compareDate = new Date(date);
   const today = new Date();
   const yesterday = new Date();
+  
+  today.setHours(0, 0, 0, 0);
+  compareDate.setHours(0, 0, 0, 0);
+  yesterday.setHours(0, 0, 0, 0);
   yesterday.setDate(yesterday.getDate() - 1);
+
   let string = [];
-  if (today.getDate() === date.getDate()) {
+  
+  if (today.getTime() === compareDate.getTime()) {
     string.push('Today');
-  } else if (yesterday.getDate() === date.getDate()) {
+  } else if (yesterday.getTime() === compareDate.getTime()) {
     string.push('Yesterday');
   } else {
     string.push(date.getDate());
     string.push(getMonth(date.getMonth()));
   }
+
   string.push(`${('0' + date.getHours()).slice(-2) }:${('0' + date.getMinutes()).slice(-2)}`);
   string = string.join(' ');
+
   return string;
 };
 
 /**
- * Get the total months ago
+ * Months are a bit different and require their own calculation,
+ * mainly because there are different amount of days in a month
  * 
  * @param {Date} nowDate Date now
  * @param {Date} previousDate Previous date
- * @param {Int} totalDays Total days between now and previous date
  */
-const getTotalMonths = (nowDate, previousDate) => {
-  let monthsCount = 0;
+const getMonths = (nowDate, previousDate) => {
+  let totalMonthsCount = 0;
+  let filteredMonthsCount = 0;
   let remainderOfDays = 0;
   
-  const yearDiff = nowDate.getFullYear() - previousDate.getFullYear();
-  
-  // Add the months in years first
-  monthsCount = monthsCount + (yearDiff * 12);
-
-  // Add the difference in months;
-  monthsCount += + Math.abs(nowDate.getMonth() - previousDate.getMonth());
-
-  // Remainder of days left
+  filteredMonthsCount = Math.abs(nowDate.getMonth() - previousDate.getMonth());
   remainderOfDays = Math.abs(nowDate.getDate() - previousDate.getDate());
-
-  return {
-    months: monthsCount,
-    remainderOfDays: remainderOfDays
-  };
-}
-
-/**
- * Get the difference in months
- * 
- * @param {Date} nowDate Date now
- * @param {Date} previousDate Previous date
- */
-const getFilteredMonths = (nowDate, previousDate) => {
-  let diff = nowDate.getMonth() - previousDate.getMonth();
-
-  if (diff < 1) {
-    return 0;
+  
+  if (nowDate.getDate() < previousDate.getDate()) {
+    const daysInMonth = new Date(previousDate.getFullYear(), previousDate.getMonth() + 1, 0).getDate();
+    filteredMonthsCount--;
+    remainderOfDays = daysInMonth - previousDate.getDate();
+    remainderOfDays += nowDate.getDate();
   }
 
-  return diff;
+  // Add the months in years
+  const yearDiff = nowDate.getFullYear() - previousDate.getFullYear();
+  totalMonthsCount = filteredMonthsCount + (yearDiff * 12);
+
+  return {
+    total: totalMonthsCount,
+    filtered: filteredMonthsCount,
+    remainderOfDays: remainderOfDays
+  };
 }
 
 /**
@@ -141,7 +142,7 @@ const getTotalValues = (date) => {
   const secondsTotal    = Math.round((now - date.getTime()) / msInSeconds);
 
   // Months are a bit different and have their own calculations
-  const monthsTotal       = getTotalMonths(now, date).months;
+  const monthsTotal       = getMonths(now, date).total;
 
   return {
     years: yearsTotal,
@@ -162,15 +163,15 @@ const getTotalValues = (date) => {
 const getFilteredValues = (date) => {
 
   // Calculate remainders
-  const monthsRemainder   = getTotalMonths(now, date).remainderOfDays * msInDays;
-  const weeksRemainder    = monthsRemainder % msInWeeks;
+  const monthsRemainder   = getMonths(now, date).remainderOfDays * msInDays; // 7 days
+  const weeksRemainder    = monthsRemainder % msInWeeks; // 1 week
   const daysRemainder     = weeksRemainder % msInDays;
   const hoursRemainder    = daysRemainder % msInHours;
   const minutesRemainder  = hoursRemainder % msInMins;
   
   // Calculate filtered time
   const yearsFiltered     = now.getFullYear() - date.getFullYear();
-  const monthsFiltered    = getFilteredMonths(now, date);
+  const monthsFiltered    = getMonths(now, date).filtered;
   const weeksFiltered     = Math.floor(monthsRemainder / msInWeeks);
   const daysFiltered      = Math.floor(weeksRemainder / msInDays);
   const hoursFiltered     = Math.floor(daysRemainder / msInHours);

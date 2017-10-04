@@ -18,6 +18,7 @@ function checkTotalDays(checkDateString, days) {
 describe('Date string', () => {
     const now = new Date();
 
+    
     describe('Check if valid date', () => {
         it('Should return error for invalid date', () => {
             const badDate = 'january';
@@ -51,7 +52,7 @@ describe('Date string', () => {
             assert.equal(checkDateString.ago.strings.short, '1 day');
         });
     });
-
+    
     describe('check date for one WEEK ago', () => {
         const weekAgoDate = new Date();
         weekAgoDate.setDate(weekAgoDate.getDate() - 7);
@@ -78,7 +79,8 @@ describe('Date string', () => {
             assert.equal(checkDateString.ago.strings.short, '1 week');
         });
     });
-
+    
+    
     describe('Check date for one MONTH ago', () => {
         const monthAgoDate = new Date();
         monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
@@ -97,7 +99,6 @@ describe('Date string', () => {
         it('for total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 1);
-            checkTotalDays(checkDateString, 31)
         });
 
         it('for string results', () => {
@@ -106,7 +107,7 @@ describe('Date string', () => {
         });
     });
 
-
+    
     describe('Check date for three MONTHS ago', () => {
         const monthAgoDate = new Date();
         monthAgoDate.setMonth(monthAgoDate.getMonth() - 3);
@@ -132,7 +133,6 @@ describe('Date string', () => {
             assert.equal(checkDateString.ago.strings.short, '3 months');
         });
     });
-
 
     describe('Check date for one YEAR ago', () => {
         const yearAgoDate = new Date();
@@ -165,6 +165,7 @@ describe('Date string', () => {
         testDate.setMonth(testDate.getMonth() - 6);
         testDate.setDate(testDate.getDate() - 4);
         const checkDateString = dateString(testDate);
+
         
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 0);
@@ -186,14 +187,13 @@ describe('Date string', () => {
             assert.equal(checkDateString.ago.strings.short, '6 months');
         });
     });
-
+    
     describe('Check date for 1 YEAR 3 MONTHS 12 DAYS ago', () => {
         const testDate = new Date();
         testDate.setFullYear(testDate.getFullYear() - 1);
         testDate.setMonth(testDate.getMonth() - 3);
         testDate.setDate(testDate.getDate() - 12);
         const checkDateString = dateString(testDate);
-        console.log(checkDateString);
         
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 1);
@@ -215,4 +215,37 @@ describe('Date string', () => {
             assert.equal(checkDateString.ago.strings.short, '1 year');
         });
     });
+    
+    describe('Check When' , () => {
+        it('Today', () => {
+            const testDate = new Date();
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, "Today ");
+        })
+
+        it('Yesterday', () => {
+            const testDate = new Date();
+            testDate.setDate(testDate.getDate() - 1);
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, "Yesterday ");
+        })
+
+        it('One week ago', () => {
+            const testDate = new Date();
+            testDate.setDate(testDate.getDate() - 7);
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, testDate.getDate());
+            assert.include(checkDateString.when, testDate.getHours());
+            assert.include(checkDateString.when, testDate.getMinutes());
+        })
+
+        it('One month ago', () => {
+            const testDate = new Date();
+            testDate.setMonth(testDate.getMonth() - 1);
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, testDate.getDate());
+            assert.include(checkDateString.when, testDate.getHours());
+            assert.include(checkDateString.when, testDate.getMinutes());
+        })
+    })
 });
