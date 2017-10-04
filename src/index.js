@@ -1,14 +1,11 @@
 const now = new Date();
 
 const msInSeconds = 1000;
-const msInMins    = msInSeconds * 60;
-const msInHours   = msInMins * 60;
-const msInDays    = msInHours * 24;
-const msInWeeks   = msInDays * 7;
-
-// console.log('msInWeeks: ', msInWeeks);
-// console.log('msInDays: ', msInDays);
-
+const msInMins = msInSeconds * 60;
+const msInHours = msInMins * 60;
+const msInDays = msInHours * 24;
+const msInWeeks = msInDays * 7;
+const msInYears = 31536000000;
 /**
  * Check if the input is a valid date object
  * 
@@ -16,10 +13,9 @@ const msInWeeks   = msInDays * 7;
  */
 const checkIfValidDate = (date) => {
   if (date.toString() === 'Invalid Date') {
-      return new Error('Date object found, but invalid date');
-  } else {
-      return date;
+    return new Error('Date object found, but invalid date');
   }
+  return date;
 };
 
 /**
@@ -59,7 +55,7 @@ const getMonth = month => {
     case 9: return 'Oct';
     case 10: return 'Nov';
     case 11: return 'Dec';
-    default: throw new Error('Error converting Monday to string'); 
+    default: throw new Error('Error converting Monday to string');
   }
 };
 
@@ -134,16 +130,16 @@ const getMonths = (nowDate, previousDate) => {
  * @param {Date} date date object
  */
 const getTotalValues = (date) => {
-  const yearsTotal      = now.getFullYear() - date.getFullYear();
-  const weeksTotal      = Math.round((now - date.getTime()) / msInWeeks);
-  const daysTotal       = Math.round((now - date.getTime()) / msInDays);
-  const hoursTotal      = Math.round((now - date.getTime()) / msInHours);
-  const minsTotal       = Math.round((now - date.getTime()) / msInMins);
-  const secondsTotal    = Math.round((now - date.getTime()) / msInSeconds);
 
   // Months are a bit different and have their own calculations
   const monthsTotal       = getMonths(now, date).total;
 
+  if (endDay >= startDay) {
+    monthsTotal += monthsDiff;
+  } else {
+    monthsTotal += (monthsDiff - 1);
+  }
+  
   return {
     years: yearsTotal,
     months: monthsTotal,
@@ -153,7 +149,7 @@ const getTotalValues = (date) => {
     minutes: minsTotal,
     seconds: secondsTotal,
   };
-}
+};
 
 /**
  * Get the filtered value in various formats
@@ -161,6 +157,7 @@ const getTotalValues = (date) => {
  * @param {Date} date JS Date object
  */
 const getFilteredValues = (date) => {
+  let ms = now.getTime() - date.getTime();
 
   // Calculate remainders
   const monthsRemainder   = getMonths(now, date).remainderOfDays * msInDays; // 7 days
@@ -179,15 +176,15 @@ const getFilteredValues = (date) => {
   const secondsFiltered   = Math.floor(minutesRemainder / msInSeconds);
 
   return {
-    years: yearsFiltered,
-    months: monthsFiltered,
-    weeks: weeksFiltered,
-    days: daysFiltered,
-    hours: hoursFiltered,
-    minutes: minutesFiltered,
-    seconds: secondsFiltered,
+    years,
+    months,
+    weeks,
+    days,
+    hours,
+    minutes,
+    seconds,
   };
-}
+};
 
 /**
  * Return the time ago in short string
@@ -195,8 +192,8 @@ const getFilteredValues = (date) => {
  * @param {filter} filtered
  */
 const getShortString = (filtered) => {
-  let string = [];
-  
+  const string = [];
+
   if (filtered.years === 1) {
     string.push('1 year');
   } else if (filtered.years > 1) {
@@ -205,8 +202,10 @@ const getShortString = (filtered) => {
     string.push('1 month');
   } else if (filtered.months > 1) {
     string.push(`${filtered.months} months`);
-  } else if(filtered.weeks === 1) {
+  } else if (filtered.weeks === 1) {
     string.push('1 week');
+  } else if (filtered.weeks > 1) {
+    string.push(`${filtered.weeks} weeks`);
   } else if (filtered.days === 1) {
     string.push('1 day');
   } else if (filtered.days > 1) {
@@ -226,7 +225,7 @@ const getShortString = (filtered) => {
   }
 
   return string.join(' ');
-}
+};
 
 /**
  * Return the time ago in long string
@@ -234,8 +233,8 @@ const getShortString = (filtered) => {
  * @param {filter} filtered 
  */
 const getLongString = (filtered) => {
-  let longString = [];
-  
+  const longString = [];
+
   if (filtered.years === 1) {
     longString.push('1 year');
   } else if (filtered.years > 1) {
@@ -253,25 +252,25 @@ const getLongString = (filtered) => {
   } else if (filtered.weeks > 1) {
     longString.push(`${filtered.weeks} weeks`);
   }
-  
+
   if (filtered.days === 1) {
     longString.push('1 day');
   } else if (filtered.days > 1) {
     longString.push(`${filtered.days} days`);
   }
-  
+
   if (filtered.hours === 1) {
     longString.push('1 hour');
   } else if (filtered.hours > 1) {
     longString.push(`${filtered.hours} hours`);
   }
-  
+
   if (filtered.minutes === 1) {
     longString.push('1 minute');
   } else if (filtered.minutes > 1) {
     longString.push(`${filtered.minutes} minutes`);
   }
-  
+
   if (filtered.seconds === 1) {
     longString.push('1 second');
   } else if (filtered.seconds > 1) {
@@ -279,7 +278,7 @@ const getLongString = (filtered) => {
   }
 
   return longString.join(' ');
-}
+};
 
 /**
  * Calculate the time difference between and date and now
@@ -293,17 +292,17 @@ const ago = (date) => {
   const longString = getLongString(filtered);
 
   return {
-    filtered: filtered,
-    total: total,
+    filtered,
+    total,
     strings: {
       long: longString,
       short: shortString,
     },
   };
-}
+};
 
-module.exports = (date) => {
-  date = checkIfDate(date);
+module.exports = (dateArg) => {
+  const date = checkIfDate(dateArg);
   if (date instanceof Error) return date;
   return {
     ago: ago(date),

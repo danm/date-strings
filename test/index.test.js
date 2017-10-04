@@ -1,6 +1,5 @@
-var dateString = require('../index.js');
+var dateString = require('../lib/index.js');
 var assert = require('chai').assert;
-
 
 /**
  * Check days, hours, minutes and seconds
@@ -17,14 +16,6 @@ function checkTotalDays(checkDateString, days) {
 
 describe('Date string', () => {
     const now = new Date();
-
-    
-    describe('Check if valid date', () => {
-        it('Should return error for invalid date', () => {
-            const badDate = 'january';
-            // assert.equal(dateString(badDate), Error('Date object found, but invalid date'));
-        })
-    });
 
     describe('check date for one DAY ago', () => {
         const yesterdayDate = new Date();
@@ -44,7 +35,7 @@ describe('Date string', () => {
         it('for total results', () => {
             assert.equal(checkDateString.ago.total.years, 0);
             assert.equal(checkDateString.ago.total.months, 0);
-            checkTotalDays(checkDateString, 1)
+            checkTotalDays(checkDateString, 1);
         });
 
         it('for string results', () => {
@@ -57,7 +48,6 @@ describe('Date string', () => {
         const weekAgoDate = new Date();
         weekAgoDate.setDate(weekAgoDate.getDate() - 7);
         const checkDateString = dateString(weekAgoDate);
-
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 0);
             assert.equal(checkDateString.ago.filtered.months, 0);
@@ -85,6 +75,14 @@ describe('Date string', () => {
         const monthAgoDate = new Date();
         monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
         const checkDateString = dateString(monthAgoDate);
+
+        // how many days in a month
+        const start = new Date(monthAgoDate);
+        start.setDate(1);
+        const end = new Date(start);
+        end.setMonth(end.getMonth() + 1);
+        end.setDate(end.getDate() - 1);
+        const daysInMonth = end.getDate();
 
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 0);
@@ -138,7 +136,7 @@ describe('Date string', () => {
         const yearAgoDate = new Date();
         yearAgoDate.setFullYear(yearAgoDate.getFullYear() - 1);
         const checkDateString = dateString(yearAgoDate);
-        
+
         it('for filtered results', () => {
             assert.equal(checkDateString.ago.filtered.years, 1);
             assert.equal(checkDateString.ago.filtered.months, 0);
