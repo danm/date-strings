@@ -65,20 +65,29 @@ const getMonth = month => {
  * @param {Date} date 
  */
 const when = (date) => {
+  const compareDate = new Date(date);
   const today = new Date();
   const yesterday = new Date();
+  
+  today.setHours(0, 0, 0, 0);
+  compareDate.setHours(0, 0, 0, 0);
+  yesterday.setHours(0, 0, 0, 0);
   yesterday.setDate(yesterday.getDate() - 1);
+
   let string = [];
-  if (today.getDate() === date.getDate()) {
+  
+  if (today.getTime() === compareDate.getTime()) {
     string.push('Today');
-  } else if (yesterday.getDate() === date.getDate()) {
+  } else if (yesterday.getTime() === compareDate.getTime()) {
     string.push('Yesterday');
   } else {
     string.push(date.getDate());
     string.push(getMonth(date.getMonth()));
   }
+
   string.push(`${('0' + date.getHours()).slice(-2) }:${('0' + date.getMinutes()).slice(-2)}`);
   string = string.join(' ');
+
   return string;
 };
 

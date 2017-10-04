@@ -1,4 +1,4 @@
-var dateString = require('../lib/index.js');
+var dateString = require('../src/index.js');
 var assert = require('chai').assert;
 
 /**
@@ -219,4 +219,37 @@ describe('Date string', () => {
             assert.equal(checkDateString.ago.strings.short, '1 year');
         });
     });
+
+    describe('Check When' , () => {
+        it('Today', () => {
+            const testDate = new Date();
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, "Today ");
+        })
+
+        it('Yesterday', () => {
+            const testDate = new Date();
+            testDate.setDate(testDate.getDate() - 1);
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, "Yesterday ");
+        })
+
+        it('One week ago', () => {
+            const testDate = new Date();
+            testDate.setDate(testDate.getDate() - 7);
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, testDate.getDate());
+            assert.include(checkDateString.when, testDate.getHours());
+            assert.include(checkDateString.when, testDate.getMinutes());
+        })
+
+        it('One month ago', () => {
+            const testDate = new Date();
+            testDate.setMonth(testDate.getMonth() - 1);
+            const checkDateString = dateString(testDate);
+            assert.include(checkDateString.when, testDate.getDate());
+            assert.include(checkDateString.when, testDate.getHours());
+            assert.include(checkDateString.when, testDate.getMinutes());
+        })
+    })
 });
