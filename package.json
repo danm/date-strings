@@ -1,6 +1,6 @@
 {
   "name": "date-strings",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Provides a date string of time ago",
   "main": "lib/index.js",
   "scripts": {
