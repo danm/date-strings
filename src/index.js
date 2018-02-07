@@ -97,15 +97,23 @@ const when = (date) => {
  * @param {Date} date date object
  */
 const getTotalValues = (date) => {
-  const yearsTotal = now.getFullYear() - date.getFullYear();
+  let yearsTotal = now.getFullYear() - date.getFullYear();
+  const months = now.getMonth() - date.getMonth();
   const weeksTotal = Math.round((now - date.getTime()) / msInWeeks);
   const daysTotal = Math.round((now - date.getTime()) / msInDays);
   const hoursTotal = Math.round((now - date.getTime()) / msInHours);
   const minsTotal = Math.round((now - date.getTime()) / msInMins);
   const secondsTotal = Math.round((now - date.getTime()) / msInSeconds);
 
-  // figure out months, has to be done like this because each month doesnt have a set amount of seconds
+  // figure out months, has to be done like this
+  // because each month doesnt have a set amount of seconds
   let monthsTotal = yearsTotal * 12;
+
+  // If months is negative then we need to subtract a year
+  if (months < 0 && yearsTotal > 0) {
+    yearsTotal -= 1;
+  }
+
   const startMonth = date.getMonth() + 1;
   const endMonth = now.getMonth() + 1;
   const startDay = date.getDate();
@@ -139,13 +147,20 @@ const getFilteredValues = (date) => {
 
   // use full year instead os ms in a year becuse ms per day * 365 doesnt work
   // is it greater than a year
-  const years = now.getFullYear() - date.getFullYear();
-  if (years >= 1) {
-    ms -= years * msInYears;
-  }
+  let years = now.getFullYear() - date.getFullYear();
 
   // we want to find out how many months are different
   let months = (now.getMonth() + 1) - (date.getMonth() + 1);
+
+  // If months is negative then we calculate months differently
+  if (months < 0 && years > 0) {
+    years -= 1;
+    months = (12 - date.getMonth()) + now.getMonth();
+  }
+
+  if (years >= 1) {
+    ms -= years * msInYears;
+  }
 
   // this just tells us whether there are different months, 30th and 1st will appear as a 1 months diff
   // to combat this, we check whether the days
