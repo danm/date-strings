@@ -20,7 +20,8 @@ describe('Date string', () => {
   describe('Check if valid date', () => {
     it('Should return error for invalid date', () => {
       const badDate = 'january';
-      // assert.equal(dateString(badDate), Error('Date object found, but invalid date'));
+      const error = dateString(badDate);
+      assert.equal(error.message, 'Date object found, but invalid date');
     });
   });
 
