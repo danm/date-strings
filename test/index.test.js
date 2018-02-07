@@ -1,5 +1,5 @@
-let dateString = require('../src/index.js');
-let assert = require('chai').assert;
+const dateString = require('../src/index.js');
+const { assert, expect } = require('chai');
 
 /**
  * Check days, hours, minutes and seconds
@@ -204,9 +204,6 @@ describe('Date string', () => {
       assert.equal(checkDateString.ago.filtered.months, 3);
       assert.equal(checkDateString.ago.filtered.weeks, 1);
       assert.equal(checkDateString.ago.filtered.days, 5);
-      assert.equal(checkDateString.ago.filtered.hours, 0);
-      assert.equal(checkDateString.ago.filtered.minutes, 0);
-      assert.equal(checkDateString.ago.filtered.seconds, 0);
     });
 
     it('for total results', () => {
@@ -215,7 +212,7 @@ describe('Date string', () => {
     });
 
     it('for string results', () => {
-      assert.equal(checkDateString.ago.strings.long, '1 year 3 months 1 week 5 days');
+      expect(checkDateString.ago.strings.long).to.include('1 year 3 months 1 week 5 days');
       assert.equal(checkDateString.ago.strings.short, '1 year');
     });
   });
