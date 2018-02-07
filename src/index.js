@@ -8,7 +8,7 @@ const msInWeeks = msInDays * 7;
 const msInYears = 31536000000;
 /**
  * Check if the input is a valid date object
- * 
+ *
  * @param {Date} d JS Date object
  */
 const checkIfValidDate = (date) => {
@@ -20,7 +20,7 @@ const checkIfValidDate = (date) => {
 
 /**
  * Check if valid date, else try to convert it to a date object
- * 
+ *
  * @param {Date} d JS Date bject
  */
 const checkIfDate = (date) => {
@@ -38,10 +38,10 @@ const checkIfDate = (date) => {
 
 /**
  * Return the month in string for the month value
- * 
+ *
  * @param {Int} month JS date month value
  */
-const getMonth = month => {
+const getMonth = (month) => {
   switch (month) {
     case 0: return 'Jan';
     case 1: return 'Feb';
@@ -61,21 +61,21 @@ const getMonth = month => {
 
 /**
  * Return when
- * 
- * @param {Date} date 
+ *
+ * @param {Date} date
  */
 const when = (date) => {
   const compareDate = new Date(date);
   const today = new Date();
   const yesterday = new Date();
-  
+
   today.setHours(0, 0, 0, 0);
   compareDate.setHours(0, 0, 0, 0);
   yesterday.setHours(0, 0, 0, 0);
   yesterday.setDate(yesterday.getDate() - 1);
 
   let string = [];
-  
+
   if (today.getTime() === compareDate.getTime()) {
     string.push('Today');
   } else if (yesterday.getTime() === compareDate.getTime()) {
@@ -85,7 +85,7 @@ const when = (date) => {
     string.push(getMonth(date.getMonth()));
   }
 
-  string.push(`${('0' + date.getHours()).slice(-2) }:${('0' + date.getMinutes()).slice(-2)}`);
+  string.push(`${(`0${  date.getHours()}`).slice(-2)}:${(`0${  date.getMinutes()}`).slice(-2)}`);
   string = string.join(' ');
 
   return string;
@@ -93,11 +93,10 @@ const when = (date) => {
 
 /**
  * Get total time difference in the various formats
- * 
+ *
  * @param {Date} date date object
  */
 const getTotalValues = (date) => {
-
   const yearsTotal = now.getFullYear() - date.getFullYear();
   const weeksTotal = Math.round((now - date.getTime()) / msInWeeks);
   const daysTotal = Math.round((now - date.getTime()) / msInDays);
@@ -118,7 +117,7 @@ const getTotalValues = (date) => {
   } else {
     monthsTotal += (monthsDiff - 1);
   }
-  
+
   return {
     years: yearsTotal,
     months: monthsTotal,
@@ -132,7 +131,7 @@ const getTotalValues = (date) => {
 
 /**
  * Get the filtered value in various formats
- * 
+ *
  * @param {Date} date JS Date object
  */
 const getFilteredValues = (date) => {
@@ -197,7 +196,7 @@ const getFilteredValues = (date) => {
 
 /**
  * Return the time ago in short string
- * 
+ *
  * @param {filter} filtered
  */
 const getShortString = (filtered) => {
@@ -238,8 +237,8 @@ const getShortString = (filtered) => {
 
 /**
  * Return the time ago in long string
- * 
- * @param {filter} filtered 
+ *
+ * @param {filter} filtered
  */
 const getLongString = (filtered) => {
   const longString = [];
@@ -291,7 +290,7 @@ const getLongString = (filtered) => {
 
 /**
  * Calculate the time difference between and date and now
- * 
+ *
  * @param {Date} date JS Date object
  */
 const ago = (date) => {
